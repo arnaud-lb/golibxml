@@ -33,6 +33,10 @@ func (node *Node) Children() *Node {
 	return makeNode(_Ctype_xmlNodePtr(unsafe.Pointer(node.Ptr.children)))
 }
 
+func (node *Node) Parent() *Node {
+	return makeNode(_Ctype_xmlNodePtr(unsafe.Pointer(node.Ptr.parent)))
+}
+
 func (node *Node) Type() ElementType {
 	return ElementType(node.Ptr._type)
 }

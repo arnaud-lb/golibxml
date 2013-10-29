@@ -71,7 +71,7 @@
 // * xmlGetNodePath
 // xmlGetNsList
 // xmlGetNsProp
-// xmlGetProp
+// * xmlGetProp
 // xmlHasNsProp
 // xmlHasProp
 // xmlIsBlankNode

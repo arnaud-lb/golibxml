@@ -1,7 +1,7 @@
 // UTF8ToHtml
 // htmlAttrAllowed
 // * htmlAutoCloseTag
-// htmlCreateMemoryParserCtxt
+// * htmlCreateMemoryParserCtxt
 // htmlCreatePushParserCtxt
 // * htmlCtxtReadDoc
 // htmlCtxtReadFd
@@ -24,7 +24,7 @@
 // htmlParseCharRef
 // htmlParseChunk
 // * htmlParseDoc
-// htmlParseDocument
+// * htmlParseDocument
 // htmlParseElement
 // htmlParseEntityRef
 // * htmlParseFile

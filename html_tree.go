@@ -25,6 +25,19 @@ type HTMLNode struct {
 // INTERFACE
 ////////////////////////////////////////////////////////////////////////////////
 
+// avoid 'inconsistent definitions for C.xmlDocGetRootElement' cgo bug
+func c_xmlDocGetRootElement(doc C.xmlDocPtr) C.xmlNodePtr {
+	return C.xmlDocGetRootElement(doc)
+}
+
+func (doc *HTMLDocument) Root() *HTMLNode {
+	cnode := c_xmlDocGetRootElement(C.xmlDocPtr(doc.Ptr))
+	return &HTMLNode{
+		Ptr: C.htmlNodePtr(cnode),
+		Node: &Node{cnode},
+	}
+}
+
 // htmlGetMetaEncoding
 func (doc *HTMLDocument) GetMetaEncoding() string {
 	cstr := C.htmlGetMetaEncoding(doc.Ptr)
@@ -59,6 +72,30 @@ func (doc *HTMLDocument) NodeDump(buf *Buffer, cur *HTMLNode) int {
 	return int(C.htmlNodeDump(buf.Ptr, doc.Ptr, cur.Ptr))
 }
 
+func (doc *HTMLDocument) DumpMemory() string {
+	var cbuf *C.xmlChar
+	var csize C.int
+	C.htmlDocDumpMemory(doc.Ptr, &cbuf, &csize)
+	ret := C.GoStringN(C.to_charptr(cbuf), csize)
+	C.free_string(C.to_charptr(cbuf))
+	return ret
+}
+
+func (doc *HTMLDocument) DumpMemoryFormat(format bool) string {
+	var cbuf *C.xmlChar
+	var csize C.int
+	var cformat C.int
+	if format {
+		cformat = C.int(1)
+	} else {
+		cformat = C.int(0)
+	}
+	C.htmlDocDumpMemoryFormat(doc.Ptr, &cbuf, &csize, cformat)
+	ret := C.GoStringN(C.to_charptr(cbuf), csize)
+	C.free_string(C.to_charptr(cbuf))
+	return ret
+}
+
 // htmlSaveFile
 func (doc *HTMLDocument) SaveFile(filename string) int {
 	ptrf := C.CString(filename)
@@ -90,3 +127,4 @@ func (doc *HTMLDocument) SetMetaEncoding(encoding string) int {
 	defer C.free_string(ptr)
 	return int(C.htmlSetMetaEncoding(doc.Ptr, C.to_xmlcharptr(ptr)))
 }
+

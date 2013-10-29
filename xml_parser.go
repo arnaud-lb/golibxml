@@ -3,6 +3,7 @@ package golibxml
 /*
 #cgo pkg-config: libxml-2.0
 #include <libxml/parser.h>
+#include <libxml/parserInternals.h>
 
 static inline void free_string(char* s) { free(s); }
 static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
@@ -53,6 +54,10 @@ const (
 
 type Parser struct {
 	Ptr C.xmlParserCtxtPtr
+}
+
+type ParserInput struct {
+	Ptr C.xmlParserInputPtr
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -263,3 +268,28 @@ func (p *Parser) Stop() {
 func SubstituteEntitiesDefault(val int) int {
 	return int(C.xmlSubstituteEntitiesDefault(C.int(val)))
 }
+
+// avoids 'inconsistent definitions for C.xmlSwitchEncoding' cgo bug
+func c_xmlSwitchEncoding(ctxt C.xmlParserCtxtPtr, enc C.xmlCharEncoding) C.int {
+	return C.xmlSwitchEncoding(ctxt, enc)
+}
+
+// xmlSwitchEncoding
+func (p *Parser) SwitchEncoding(enc Encoding) int {
+	return int(c_xmlSwitchEncoding(p.Ptr, C.xmlCharEncoding(enc)))
+}
+
+func (p *Parser) GetInput() *ParserInput {
+	return &ParserInput{
+		Ptr: p.Ptr.input,
+	}
+}
+
+func (p *Parser) GetEncoding() string {
+	return C.GoString(C.to_charptr(p.Ptr.encoding))
+}
+
+func (i *ParserInput) GetEncoding() string {
+	return C.GoString(C.to_charptr(i.Ptr.encoding))
+}
+

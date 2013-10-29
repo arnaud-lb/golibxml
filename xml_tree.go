@@ -290,7 +290,7 @@ func (attr *Attribute) CopyList(target *Node) *Attribute {
 
 // xmlDocGetRootElement
 func (doc *Document) Root() *Node {
-	cnode := C.xmlDocGetRootElement(doc.Ptr)
+	cnode := c_xmlDocGetRootElement(doc.Ptr)
 	return makeNode(cnode)
 }
 
@@ -624,6 +624,21 @@ func SetCompressionLevel(level int) {
 // xmlSetDocCompressMode
 func (doc *Document) SetCompressionLevel(level int) {
 	C.xmlSetDocCompressMode(doc.Ptr, C.int(level))
+}
+
+// xmlGetProp
+func (node *Node) GetAttribute(name string) (value string, ok bool) {
+	ptrn := C.CString(name)
+	defer C.free_string(ptrn)
+	ptrv := C.xmlGetProp(node.Ptr, C.to_xmlcharptr(ptrn))
+	if ptrv == nil {
+		ok = false
+	} else {
+		ok = true
+		value = C.GoString(C.to_charptr(ptrv))
+		C.free_xmlstring(ptrv)
+	}
+	return
 }
 
 // xmlSetProp

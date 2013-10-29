@@ -3,6 +3,8 @@ package golibxml
 /*
 #cgo pkg-config: libxml-2.0
 #include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
+#include <libxml/parserInternals.h>
 
 static inline void free_string(char* s) { free(s); }
 static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
@@ -28,6 +30,7 @@ const (
 	HTML_PARSE_NONET                      = C.HTML_PARSE_NONET     //: Forbid network access
 	HTML_PARSE_NOIMPLIED                  = C.HTML_PARSE_NOIMPLIED //: Do not add implied html/body... elements
 	HTML_PARSE_COMPACT                    = C.HTML_PARSE_COMPACT   //: compact small text nodes
+	HTML_PARSE_IGNORE_ENC                 = C.HTML_PARSE_IGNORE_ENC//: ignore internal document encoding hint
 )
 
 type ElemDesc struct {
@@ -41,6 +44,7 @@ type HTMLDocument struct {
 }
 
 type HTMLParser struct {
+	*Parser
 	Ptr C.htmlParserCtxtPtr
 }
 
@@ -69,7 +73,10 @@ func makeHTMLParser(parser C.htmlParserCtxtPtr) *HTMLParser {
 	if parser == nil {
 		return nil
 	}
-	return &HTMLParser{parser}
+	return &HTMLParser{
+		Parser: makeParser(C.xmlParserCtxtPtr(parser)),
+		Ptr: parser,
+	}
 }
 
 func makeElemDesc(desc C.htmlElemDescPtr) *ElemDesc {
@@ -112,9 +119,30 @@ func (p *HTMLParser) UseOptions(options HTMLParserOption) int {
 	return int(C.htmlCtxtUseOptions(p.Ptr, C.int(options)))
 }
 
+// htmlParseDocument
+func (p *HTMLParser) Parse() int {
+	return int(C.htmlParseDocument(p.Ptr))
+}
+
+func (p *HTMLParser) MyDoc() *HTMLDocument {
+	if docptr := p.Ptr.myDoc; docptr != nil {
+		return makeHTMLDoc(C.htmlDocPtr(docptr))
+	}
+	return nil
+}
+
 // htmlFreeParserCtxt
 func (p *HTMLParser) Free() {
 	C.htmlFreeParserCtxt(p.Ptr)
+}
+
+// htmlCreateMemoryParserCtxt
+func CreateHTMLMemoryParserCtxt(cur string) *HTMLParser {
+	ptr := C.CString(cur)
+	defer C.free_string(ptr)
+	clen := C.int(len(cur))
+	pctx := C.htmlCreateMemoryParserCtxt(ptr, clen)
+	return makeHTMLParser(pctx)
 }
 
 // htmlNewParserCtxt
@@ -182,3 +210,4 @@ func TagLookup(tag string) *ElemDesc {
 	cdesc := C.htmlTagLookup(C.to_xmlcharptr(ptr))
 	return makeElemDesc(cdesc)
 }
+

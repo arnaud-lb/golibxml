@@ -53,3 +53,15 @@ func DetectCharEncoding(buffer[] byte) Encoding {
 	return Encoding(C.xmlDetectCharEncoding(ptr, C.int(len(buffer))))
 }
 
+// xmlParseCharEncoding
+func ParseCharEncoding(name string) Encoding {
+	cname := C.CString(name)
+	defer C.free_string(cname)
+	return Encoding(C.xmlParseCharEncoding(cname))
+}
+
+func GetCharEncodingName(enc Encoding) string {
+	cname := C.xmlGetCharEncodingName(C.xmlCharEncoding(enc))
+	return C.GoString(cname)
+}
+

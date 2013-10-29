@@ -70,3 +70,4 @@
 // xmlSetupParserForBuffer
 // * xmlStopParser
 // * xmlSubstituteEntitiesDefault
+// * xmlSwitchEncoding

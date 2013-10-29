@@ -3,12 +3,24 @@ package golibxml
 /*
 #cgo pkg-config: libxml-2.0
 #include <libxml/xmlreader.h>
+#include <string.h>
 
 static inline void free_string(char* s) { free(s); }
 static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
 static inline char *to_charptr(const xmlChar *s) { return (char *)s; }
+
+int golibxmlInputReadCallback(void *context, char *buffer, int len);
+int golibxmlInputCloseCallback(void *context);
+
+static inline xmlInputReadCallback getGolibxmlInputReadCallbackAddr() {
+	return golibxmlInputReadCallback;
+}
+static inline xmlInputCloseCallback getGolibxmlInputCloseCallbackAddr() {
+	return golibxmlInputCloseCallback;
+}
 */
 import "C"
+import "unsafe"
 
 ////////////////////////////////////////////////////////////////////////////////
 // TYPES/STRUCTS
@@ -17,6 +29,11 @@ import "C"
 type TextReader struct {
 	Ptr    C.xmlTextReaderPtr
 	buffer *C.char
+}
+
+type TextReaderIOContext struct {
+	readCb  func ([]byte) int
+	closeCb func () int
 }
 
 // xmlReaderTypes
@@ -119,6 +136,45 @@ func ReaderForMemory(buffer string, url, encoding string, options ParserOption) 
 	ptr := C.xmlReaderForMemory(cbuffer, clen, curl, cencoding, coptions)
 
 	return makeTextReader(ptr, cbuffer)
+}
+
+//export golibxmlInputReadCallback
+func golibxmlInputReadCallback(context unsafe.Pointer, buffer *C.char, buflen C.int) C.int {
+	c := (*TextReaderIOContext)(context)
+	buf := make([]byte, int(buflen))
+	clen := C.int(c.readCb(buf))
+	C.memcpy(unsafe.Pointer(buffer), unsafe.Pointer(&buf[0]), C.size_t(clen))
+	return clen
+}
+
+//export golibxmlInputCloseCallback
+func golibxmlInputCloseCallback(context unsafe.Pointer) C.int {
+	c := (*TextReaderIOContext)(context)
+	return C.int(c.closeCb())
+}
+
+// xmlReaderForIO
+func ReaderForIO(readCallback func ([]byte) int, closeCallback func() int, url string, encoding string, options ParserOption) *TextReader {
+
+	context := &TextReaderIOContext{
+		readCb: readCallback,
+		closeCb: closeCallback,
+	}
+
+	curl := C.CString(url)
+	var cencoding *C.char
+	if encoding != "" {
+		cencoding = C.CString(encoding)
+	} else {
+		cencoding = nil
+	}
+
+	ptr := C.xmlReaderForIO(C.getGolibxmlInputReadCallbackAddr(), C.getGolibxmlInputReadCallbackAddr(), unsafe.Pointer(context), curl, cencoding, C.int(options))
+
+	C.free_string(curl)
+	C.free_string(cencoding)
+
+	return makeTextReader(ptr, nil)
 }
 
 // xmlTextReaderRead
