@@ -279,6 +279,11 @@ func (p *Parser) SwitchEncoding(enc Encoding) int {
 	return int(c_xmlSwitchEncoding(p.Ptr, C.xmlCharEncoding(enc)))
 }
 
+// xmlSwitchToEncoding
+func (p *Parser) SwitchToEncoding(handler *CharEncodingHandler) int {
+	return int(C.xmlSwitchToEncoding(p.Ptr, handler.Ptr))
+}
+
 func (p *Parser) GetInput() *ParserInput {
 	return &ParserInput{
 		Ptr: p.Ptr.input,

@@ -16,6 +16,11 @@ import "unsafe"
 ////////////////////////////////////////////////////////////////////////////////
 
 type Encoding int
+
+type CharEncodingHandler struct {
+	Ptr C.xmlCharEncodingHandlerPtr
+}
+
 const (
     XML_CHAR_ENCODING_ERROR Encoding = -1 //: No char encoding detected
     XML_CHAR_ENCODING_NONE = 0 //: No char encoding detected
@@ -44,6 +49,17 @@ const (
 )
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+func makeCharEncodingHandler(handler C.xmlCharEncodingHandlerPtr) *CharEncodingHandler {
+	if handler == nil {
+		return nil
+	}
+	return &CharEncodingHandler{handler}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // INTERFACE
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -65,3 +81,10 @@ func GetCharEncodingName(enc Encoding) string {
 	return C.GoString(cname)
 }
 
+// xmlFindCharEncodingHandler
+func FindCharEncodingHandler(name string) *CharEncodingHandler {
+	cname := C.CString(name)
+	defer C.free_string(cname)
+	chandler := C.xmlFindCharEncodingHandler(cname)
+	return makeCharEncodingHandler(chandler)
+}
