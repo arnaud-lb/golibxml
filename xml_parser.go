@@ -8,13 +8,13 @@ package golibxml
 static inline void free_string(char* s) { free(s); }
 static inline xmlChar *to_xmlcharptr(const char *s) { return (xmlChar *)s; }
 static inline char *to_charptr(const xmlChar *s) { return (char *)s; }
-static inline int *new_int_ptr(int value) { 
+static inline int *new_int_ptr(int value) {
 	int *ptr = calloc(sizeof(int), 1);
 	*ptr = value;
 	return ptr;
 }
-static inline char **new_char_array(int size) { return calloc(sizeof(char *), size); } 
-static inline void set_char_array_string(char **ptr, char *str, int n) { ptr[n] = str; } 
+static inline char **new_char_array(int size) { return calloc(sizeof(char *), size); }
+static inline void set_char_array_string(char **ptr, char *str, int n) { ptr[n] = str; }
 static inline char *get_char_array_string(char **ptr, int n) {
 	return ptr[n];
 }
@@ -297,4 +297,3 @@ func (p *Parser) GetEncoding() string {
 func (i *ParserInput) GetEncoding() string {
 	return C.GoString(C.to_charptr(i.Ptr.encoding))
 }
-

@@ -15,24 +15,23 @@ const TEST_XML_STRING = `<?xml version="1.0" encoding="UTF-8"?>
 
 func TestXmlReader(t *testing.T) {
 
-		r := ReaderForMemory(TEST_XML_STRING, "", "", ParserOption(0))
+	r := ReaderForMemory(TEST_XML_STRING, "", "", ParserOption(0))
 
-		if r == nil {
-			t.Fail()
-		}
+	if r == nil {
+		t.Fail()
+	}
 
-		defer r.Free()
+	defer r.Free()
 
-		if r.Read() != 1 {
-			t.Fail()
-		}
+	if r.Read() != 1 {
+		t.Fail()
+	}
 
-		if r.NodeType() != XML_READER_TYPE_ELEMENT {
-			t.Fail()
-		}
+	if r.NodeType() != XML_READER_TYPE_ELEMENT {
+		t.Fail()
+	}
 
-		if r.Name() != "rss" {
-			t.Fail()
-		}
+	if r.Name() != "rss" {
+		t.Fail()
+	}
 }
-

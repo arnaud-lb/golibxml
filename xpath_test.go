@@ -44,4 +44,3 @@ func TestNewXPathSearch(t *testing.T) {
 	//t.Log(xpath.GetNodeSet().Ptr)
 	t.Log(xpath.ConvertString().String())
 }
-

@@ -33,7 +33,7 @@ func c_xmlDocGetRootElement(doc C.xmlDocPtr) C.xmlNodePtr {
 func (doc *HTMLDocument) Root() *HTMLNode {
 	cnode := c_xmlDocGetRootElement(C.xmlDocPtr(doc.Ptr))
 	return &HTMLNode{
-		Ptr: C.htmlNodePtr(cnode),
+		Ptr:  C.htmlNodePtr(cnode),
 		Node: &Node{cnode},
 	}
 }
@@ -127,4 +127,3 @@ func (doc *HTMLDocument) SetMetaEncoding(encoding string) int {
 	defer C.free_string(ptr)
 	return int(C.htmlSetMetaEncoding(doc.Ptr, C.to_xmlcharptr(ptr)))
 }
-

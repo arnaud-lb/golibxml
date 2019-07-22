@@ -29,4 +29,3 @@ func TestDetectCharEncodingUTF16LE(t *testing.T) {
 		t.Fatal(enc)
 	}
 }
-

@@ -90,14 +90,13 @@ func (elem ElementType) GoString() string {
 }
 
 func (elem ElementType) String() string {
-	switch (elem) {
-		case XML_ELEMENT_NODE:
-			return "Node"
-		case XML_ATTRIBUTE_NODE:
-			return "Attribute"
-		case XML_TEXT_NODE:
-			return "Text"
+	switch elem {
+	case XML_ELEMENT_NODE:
+		return "Node"
+	case XML_ATTRIBUTE_NODE:
+		return "Attribute"
+	case XML_TEXT_NODE:
+		return "Text"
 	}
 	return "Unknown Type"
 }
-

@@ -24,4 +24,3 @@ func (obj *XPathObject) Results() chan *Node {
 	}(obj, channel)
 	return channel
 }
-

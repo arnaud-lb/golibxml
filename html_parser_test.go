@@ -14,6 +14,7 @@ func TestParseHTMLDoc(t *testing.T) {
 	defer doc.Free()
 	compareResult(t, doc.String(), TEST_HTML_EXPECTED)
 }
+
 /*
 func TestParseHTMLDocLeak(t *testing.T) {
 	for i := 0; i < 100000; i++ {
@@ -32,6 +33,7 @@ func TestParseHTMLFile(t *testing.T) {
 	defer doc.Free()
 	compareResult(t, doc.String(), TEST_HTML_EXPECTED)
 }
+
 /*
 func TestParseHTMLFileLeak(t *testing.T) {
 	for i := 0; i < 100000; i++ {
@@ -72,4 +74,3 @@ func TestReadHTMLMemory(t *testing.T) {
 	defer doc.Free()
 	compareResult(t, doc.String(), TEST_HTML_EXPECTED)
 }
-

@@ -4,14 +4,14 @@ import "testing"
 import "syscall"
 
 type ElementTypeTestCase struct {
-	got ElementType
+	got      ElementType
 	expected string
 }
 
-var element_type_tests[] ElementTypeTestCase = []ElementTypeTestCase{
-	{ XML_ELEMENT_NODE, "Node" },
-	{ XML_ATTRIBUTE_NODE, "Attribute" },
-	{ XML_TEXT_NODE, "Text" },
+var element_type_tests []ElementTypeTestCase = []ElementTypeTestCase{
+	{XML_ELEMENT_NODE, "Node"},
+	{XML_ATTRIBUTE_NODE, "Attribute"},
+	{XML_TEXT_NODE, "Text"},
 }
 
 func getRSS() uint64 {

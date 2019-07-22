@@ -32,8 +32,8 @@ type TextReader struct {
 }
 
 type TextReaderIOContext struct {
-	readCb  func ([]byte) int
-	closeCb func () int
+	readCb  func([]byte) int
+	closeCb func() int
 }
 
 // xmlReaderTypes
@@ -154,10 +154,10 @@ func golibxmlInputCloseCallback(context unsafe.Pointer) C.int {
 }
 
 // xmlReaderForIO
-func ReaderForIO(readCallback func ([]byte) int, closeCallback func() int, url string, encoding string, options ParserOption) *TextReader {
+func ReaderForIO(readCallback func([]byte) int, closeCallback func() int, url string, encoding string, options ParserOption) *TextReader {
 
 	context := &TextReaderIOContext{
-		readCb: readCallback,
+		readCb:  readCallback,
 		closeCb: closeCallback,
 	}
 
