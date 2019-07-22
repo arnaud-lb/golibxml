@@ -1,7 +1,9 @@
 package golibxml
 
-import "testing"
-import "syscall"
+import (
+	"syscall"
+	"testing"
+)
 
 type ElementTypeTestCase struct {
 	got      ElementType
@@ -46,11 +48,12 @@ func TestNewBuffer(t *testing.T) {
 
 func TestNewBufferLeak(t *testing.T) {
 	var buffer *Buffer
+	origRSS := getRSS()
 	for i := 0; i < 1000000; i++ {
 		buffer = testNewBuffer(t)
 		buffer.Free()
 	}
-	if getRSS() > 5000 {
+	if getRSS()-origRSS > 5000 {
 		t.Fatal("Memory leak")
 	}
 }
@@ -65,11 +68,12 @@ func TestNewBufferSize(t *testing.T) {
 
 func TestNewBufferSizeLeak(t *testing.T) {
 	var buffer *Buffer
+	origRSS := getRSS()
 	for i := 0; i < 1000000; i++ {
 		buffer = NewBufferSize(1024)
 		buffer.Free()
 	}
-	if getRSS() > 5000 {
+	if getRSS()-origRSS > 5000 {
 		t.Fatal("Memory leak")
 	}
 }
